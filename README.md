@@ -52,32 +52,32 @@ flowchart TD
     classDef ingestion fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
 
     %% Data Ingestion Pipeline
-    subgraph Curation ["Data Collection & Processing"]
-        A["Academic Literature / PubMed"] -->|Entrez API| B["Python Extractor & QC Scripts"]
-        B -->|Standardization & Label Injection| C["dohad_platform/frontend/assets/prenatal_heavy_metals.csv"]
-        B -->|Database Seeding| D["DOHaD.sql / MySQL 8.0"]
+    subgraph Curation [Data Collection and Processing]
+        A["Academic Literature - PubMed"] -->|Entrez API| B["Python Extractor and QC Scripts"]
+        B -->|Standardization and Label Injection| C["dohad_platform/frontend/assets/prenatal_heavy_metals.csv"]
+        B -->|Database Seeding| D["DOHaD.sql - MySQL 8.0"]
     end
     class B,C ingestion;
     class D storage;
 
-    %% Server & Storage Layer
-    subgraph ServerLayer ["Production Backend / Optional"]
+    %% Server and Storage Layer
+    subgraph ServerLayer [Production Backend - Optional]
         E["Node.js Express API"] -->|mysql2 connector| D
         E -->|JSON Endpoints| F["API Controller"]
     end
     class E,F backend;
 
     %% Client Layer
-    subgraph ClientLayer ["Interactive Frontend Application"]
-        G["Browser UI / HTML5 & CSS3"]
+    subgraph ClientLayer [Interactive Frontend Application]
+        G["Browser UI - HTML5 and CSS3"]
         H["script.js Core Application Engine"]
-        I["Dynamic Query / Filter Logic"]
-        J["Chart.js / Data Visualization"]
-        K["Leaflet.js / Interactive Map Cell Grid"]
+        I["Dynamic Query - Filter Logic"]
+        J["Chart.js - Data Visualization"]
+        K["Leaflet.js - Interactive Map Cell Grid"]
 
         G -->|User Input Event| H
-        H -->|Fetches Static CSV / API| C
-        H -->|appState Caching & Persistence| I
+        H -->|Fetches Static CSV - API| C
+        H -->|appState Caching and Persistence| I
         I -->|Calculates Data Arrays| J
         I -->|Calculates Coordinates| K
     end
