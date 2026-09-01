@@ -1,2 +1,6 @@
 /DOHaD_Presentation.pptx
 /generate_ppt.py
+
+# Node.js
+node_modules/
+.env
