@@ -44,7 +44,7 @@ The **DOHaD Exposure Intelligence Platform** addresses this fragmentation by pro
 The DOHaD Exposure Intelligence Platform is designed with a decoupled architecture. This allows for both lightweight static deployments (loading preprocessed datasets client-side via JavaScript) and database-backed enterprise environments (powered by Node.js, Express, and MySQL).
 
 ```mermaid
-graph TD
+flowchart TD
     %% Define styles
     classDef frontend fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
     classDef backend fill:#efebe9,stroke:#5d4037,stroke-width:2px;
