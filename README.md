@@ -43,48 +43,45 @@ The **DOHaD Exposure Intelligence Platform** addresses this fragmentation by pro
 
 The DOHaD Exposure Intelligence Platform is designed with a decoupled architecture. This allows for both lightweight static deployments (loading preprocessed datasets client-side via JavaScript) and database-backed enterprise environments (powered by Node.js, Express, and MySQL).
 
-```mermaid
-flowchart TD
-    %% Define styles
-    classDef frontend fill:#e1f5fe,stroke:#0288d1,stroke-width:2px;
-    classDef backend fill:#efebe9,stroke:#5d4037,stroke-width:2px;
-    classDef storage fill:#efe8e0,stroke:#e65100,stroke-width:2px;
-    classDef ingestion fill:#e8f5e9,stroke:#2e7d32,stroke-width:2px;
-
-    %% Data Ingestion Pipeline
-    subgraph Curation [Data Collection and Processing]
-        A["Academic Literature - PubMed"] -->|Entrez API| B["Python Extractor and QC Scripts"]
-        B -->|Standardization and Label Injection| C["dohad_platform/frontend/assets/prenatal_heavy_metals.csv"]
-        B -->|Database Seeding| D["DOHaD.sql - MySQL 8.0"]
-    end
-    class B,C ingestion;
-    class D storage;
-
-    %% Server and Storage Layer
-    subgraph ServerLayer [Production Backend - Optional]
-        E["Node.js Express API"] -->|mysql2 connector| D
-        E -->|JSON Endpoints| F["API Controller"]
-    end
-    class E,F backend;
-
-    %% Client Layer
-    subgraph ClientLayer [Interactive Frontend Application]
-        G["Browser UI - HTML5 and CSS3"]
-        H["script.js Core Application Engine"]
-        I["Dynamic Query - Filter Logic"]
-        J["Chart.js - Data Visualization"]
-        K["Leaflet.js - Interactive Map Cell Grid"]
-
-        G -->|User Input Event| H
-        H -->|Fetches Static CSV - API| C
-        H -->|appState Caching and Persistence| I
-        I -->|Calculates Data Arrays| J
-        I -->|Calculates Coordinates| K
-    end
-    class G,H,I,J,K frontend;
-
-    %% Interconnection
-    F -->|Optional REST Data| H
+```text
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                         DATA COLLECTION & PROCESSING                        │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│  [PubMed / Academic Literature] ───(Entrez API)───▶ [Python QC Scripts]     │
+│                                                             │               │
+│                  ┌──────────────────────────────────────────┴────┐          │
+│                  ▼                                               ▼          │
+│        [Static CSV Dataset]                              [SQL Seed File]    │
+│                                                                  │          │
+└──────────────────┬───────────────────────────────────────────────┼──────────┘
+                   │                                               │           
+                   │                   ┌───────────────────────────▼──────────┐
+                   │                   │          PRODUCTION BACKEND          │
+                   │                   ├──────────────────────────────────────┤
+                   │                   │ [MySQL DB] ◀── [Node.js Express API] │
+                   │                   │                          │           │
+                   │                   │                  [API Controller]    │
+                   │                   └──────────────────────────┬───────────┘
+                   │                                              │            
+                   ▼                                              ▼            
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                      INTERACTIVE FRONTEND APPLICATION                       │
+├─────────────────────────────────────────────────────────────────────────────┤
+│                                                                             │
+│                            [Browser UI (HTML/CSS)]                          │
+│                                       │                                     │
+│                                       ▼                                     │
+│     (Fetches Static CSV) ───▶ [script.js Engine] ◀─── (Optional REST API)   │
+│                                       │                                     │
+│                                       ▼                                     │
+│                         [Dynamic Query & Filter Logic]                      │
+│                                 │            │                              │
+│                 ┌───────────────┘            └────────────────┐             │
+│                 ▼                                             ▼             │
+│        [Chart.js Visuals]                            [Leaflet.js Maps]      │
+│                                                                             │
+└─────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -145,48 +142,47 @@ dohad_platform/
 
 # 🔬 Scientific Background
 
-```mermaid
-flowchart TD
-    %% Publication-Quality Color Palette (Theme-Adaptive)
-    classDef blueBox stroke:#3b82f6,stroke-width:2px,rx:12px,ry:12px;
-    classDef purpleBox stroke:#a855f7,stroke-width:2px,rx:12px,ry:12px;
-    classDef orangeBox stroke:#f97316,stroke-width:2px,rx:12px,ry:12px;
-    classDef greenBox stroke:#22c55e,stroke-width:2px,rx:12px,ry:12px;
-    classDef redBox stroke:#ef4444,stroke-width:2px,rx:12px,ry:12px;
-    classDef diseaseList stroke:#ef4444,stroke-width:1px,stroke-dasharray: 5,rx:8px,ry:8px;
-
-    %% Nodes
-    A["🧪 Early-Life Environmental Toxicants<br/>(Lead, Mercury, Cadmium, Arsenic)"]:::blueBox
-    B["🤰 Placental Transfer & Fetal Exposure"]:::blueBox
-    C["🧬 Disrupted Epigenetic Programming<br/>(DNA Methylation / Histone Modifications)"]:::purpleBox
-    
-    D["🫀 Altered Organogenesis"]:::orangeBox
-    E["⚖️ Endocrine Disruption"]:::orangeBox
-    
-    F["⚙️ Permanent Alterations in Physiology"]:::greenBox
-    
-    G["⚠️ Increased Chronic Disease Risk"]:::redBox
-    
-    H["🩺 Neurodevelopmental Disorders<br/>🩺 Cardiovascular Diseases<br/>🩺 Renal Disorders<br/>🩺 Respiratory Disorders"]:::diseaseList
-
-    %% Structural Alignment & Layout
-    A --> B
-    B --> C
-    
-    %% Balanced Branching
-    C --> D
-    C --> E
-    
-    %% Seamless Merging
-    D --> F
-    E --> F
-    
-    F --> G
-    G --- H
-
-    %% Thin, Smooth Scientific Arrows
-    linkStyle 0,1,2,3,4,5,6 stroke:#94a3b8,stroke-width:1.5px,fill:none;
-    linkStyle 7 stroke:none;
+```text
+       ┌───────────────────────────────────────────────────────────────┐
+       │             🧪 Early-Life Environmental Toxicants             │
+       │               (Lead, Mercury, Cadmium, Arsenic)               │
+       └───────────────────────────────┬───────────────────────────────┘
+                                       │
+                                       ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │             🤰 Placental Transfer & Fetal Exposure            │
+       └───────────────────────────────┬───────────────────────────────┘
+                                       │
+                                       ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │              🧬 Disrupted Epigenetic Programming              │
+       │           (DNA Methylation / Histone Modifications)           │
+       └───────────────────────────────┬───────────────────────────────┘
+                                       │
+                       ┌───────────────┴───────────────┐
+                       ▼                               ▼
+           ┌───────────────────────┐       ┌───────────────────────┐
+           │🫀 Altered Organogenesis│       │⚖️ Endocrine Disruption│
+           └───────────────────────┘       └───────────────────────┘
+                       │                               │
+                       └───────────────┬───────────────┘
+                                       ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │            ⚙️ Permanent Alterations in Physiology             │
+       └───────────────────────────────┬───────────────────────────────┘
+                                       │
+                                       ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │              ⚠️ Increased Chronic Disease Risk                │
+       └───────────────────────────────┬───────────────────────────────┘
+                                       │
+                                       ▼
+       ┌───────────────────────────────────────────────────────────────┐
+       │               🩺 Neurodevelopmental Disorders                 │
+       │               🩺 Cardiovascular Diseases                      │
+       │               🩺 Renal Disorders                              │
+       │               🩺 Respiratory Disorders                        │
+       └───────────────────────────────────────────────────────────────┘
 ```
 
 The **Developmental Origins of Health and Disease (DOHaD)** paradigm illustrates how early-life environmental exposures interact with human development to permanently shape biological trajectories. During critical windows of fetal gestation, toxicant exposures—such as heavy metals (Lead, Mercury, Cadmium, Arsenic)—are not merely acute hazards but potent modifiers of long-term physiological programming.
