@@ -54,8 +54,8 @@ graph TD
     %% Data Ingestion Pipeline
     subgraph Curation [Data Collection & Processing]
         A[Academic Literature / PubMed] -->|Entrez API| B[Python Extractor & QC Scripts]
-        B -->|Standardization & Label Injection| C[dohad_platform/frontend/assets/prenatal_heavy_metals.csv]
-        B -->|Database Seeding| D[DOHaD.sql / MySQL 8.0]
+        B -->|Standardization & Label Injection| C["dohad_platform/frontend/assets/prenatal_heavy_metals.csv"]
+        B -->|Database Seeding| D["DOHaD.sql / MySQL 8.0"]
     end
     class B,C ingestion;
     class D storage;
@@ -153,7 +153,7 @@ flowchart TD
     classDef orangeBox stroke:#f97316,stroke-width:2px,rx:12px,ry:12px;
     classDef greenBox stroke:#22c55e,stroke-width:2px,rx:12px,ry:12px;
     classDef redBox stroke:#ef4444,stroke-width:2px,rx:12px,ry:12px;
-    classDef diseaseList stroke:#ef4444,stroke-width:1px,stroke-dasharray: 3 3,rx:8px,ry:8px;
+    classDef diseaseList stroke:#ef4444,stroke-width:1px,stroke-dasharray: 5,rx:8px,ry:8px;
 
     %% Nodes
     A["🧪 Early-Life Environmental Toxicants<br/>(Lead, Mercury, Cadmium, Arsenic)"]:::blueBox
@@ -220,7 +220,7 @@ flowchart TD
     %% 1. Ingestion Pipeline Steps
     Step1[1. PubMed Database Query] -->|Entrez API Search| Step2[2. XML Metadata Extraction]
     Step2 -->|Extract Title, Abstract, DOI| Step3[3. Automated Preprocessing & Cleaning]
-    Step3 -->|Regex Labeling & Deduplication| Step4{4. Data Export}
+    Step3 -->|Regex Labeling & Deduplication| Step4{"4. Data Export"}
     
     Step4 -->|Static Ingestion| Step4a[4a. CSV Generation]
     Step4 -->|MySQL Seeding| Step4b[4b. SQL Generation]
@@ -230,7 +230,7 @@ flowchart TD
     Step5 --> Step6[6. In-Memory State Management]
     
     %% 3. User Action Loop
-    Step6 --> UserAction{7. User Updates Filters}
+    Step6 --> UserAction{"7. User Updates Filters"}
     UserAction -->|Filter change / Search input| Step7[8. Multi-Gate AND Filtering]
     Step7 --> Step8[9. Update Chart.js & Leaflet UI]
     Step8 --> Step9[10. Render Paginated Research Cards]
