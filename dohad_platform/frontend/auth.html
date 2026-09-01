@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOHaD Platform | Authentication</title>
+    <!-- Use main style.css for cursor & variables, and auth.css for layout -->
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/auth.css">
+
+    <!-- Premium Animation Libraries -->
+    <!-- Removed lenis.min.js to prevent height: auto scrollbar overrides on auth page -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-engine@2.11.0/tsparticles.engine.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-basic@2.11.0/tsparticles.basic.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/tsparticles-interaction-particles-links@2.11.0/tsparticles.interaction.particles.links.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-move-base@2.11.0/tsparticles.move.base.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-shape-circle@2.11.0/tsparticles.shape.circle.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/tsparticles-updater-color@2.11.0/tsparticles.updater.color.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/tsparticles-updater-opacity@2.11.0/tsparticles.updater.opacity.min.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/tsparticles-updater-out-modes@2.11.0/tsparticles.updater.out-modes.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles-updater-size@2.11.0/tsparticles.updater.size.min.js"></script>
+</head>
+
+<body>
+    <!-- Interactive Particle Background -->
+    <div id="tsparticles"></div>
+
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <div class="auth-box" id="auth-box">
+        <!-- Sign Up Container -->
+        <div class="form-container sign-up-container">
+            <form id="signup-form" action="javascript:void(0)">
+                <h3 style="color: #0d47a1; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px;">DOHaD Platform
+                </h3>
+                <h1>Create Account</h1>
+                <span>Register to browse the platform</span>
+                <div id="signup-error"
+                    style="display: none; color: #b91c1c; background: #fee2e2; padding: 0.5rem; border-radius: 6px; margin: 10px 0; font-size: 0.8rem; border: 1px solid #f87171; width: 100%;">
+                </div>
+
+                <div style="display: flex; gap: 10px; width: 100%;">
+                    <input type="text" id="first-name" placeholder="First Name" required />
+                    <input type="text" id="last-name" placeholder="Last Name" required />
+                </div>
+                <input type="email" id="signup-email" placeholder="Email" required />
+                <input type="password" id="signup-password" placeholder="Password" required />
+                <button type="submit" style="margin-top: 10px;">Sign Up</button>
+            </form>
+        </div>
+
+        <!-- Sign In Container -->
+        <div class="form-container sign-in-container">
+            <form id="login-form" action="javascript:void(0)">
+                <h3 style="color: #0d47a1; margin-bottom: 20px; font-weight: 800; letter-spacing: 1px;">DOHaD Platform
+                </h3>
+                <h1>Sign in</h1>
+                <span>Access your research database</span>
+                <div id="login-error"
+                    style="display: none; color: #b91c1c; background: #fee2e2; padding: 0.5rem; border-radius: 6px; margin: 10px 0; font-size: 0.8rem; border: 1px solid #f87171; width: 100%;">
+                </div>
+
+                <input type="email" id="login-email" placeholder="Email" required />
+                <input type="password" id="login-password" placeholder="Password" required />
+                <button type="submit" style="margin-top: 20px;">Sign In</button>
+            </form>
+        </div>
+
+        <!-- Overlay Container -->
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left">
+                    <h1>Welcome Back!</h1>
+                    <p>To keep connected with us please login with your personal info</p>
+                    <button class="ghost" id="signIn">Sign In</button>
+                </div>
+
+                <div class="overlay-panel overlay-right">
+                    <h1>Hello, Researcher!</h1>
+                    <p>Enter your personal details and start your journey with us</p>
+                    <button class="ghost" id="signUp">Sign Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load main script.js solely for the custom-cursor init method -->
+    <script src="js/script.js"></script>
+    <!-- tsParticles initialization -->
+    <script src="https://cdn.jsdelivr.net/npm/tsparticles@2.11.0/tsparticles.bundle.min.js"></script>
+    <script>
+        // Initialize interactive particle network
+        tsParticles.load("tsparticles", {
+            background: {
+                color: { value: "transparent" },
+            },
+            fpsLimit: 120,
+            interactivity: {
+                events: {
+                    onClick: { enable: true, mode: "push" },
+                    onHover: { enable: true, mode: "repulse" },
+                    resize: true,
+                },
+                modes: {
+                    push: { quantity: 4 },
+                    repulse: { distance: 100, duration: 0.4 },
+                },
+            },
+            particles: {
+                color: { value: ["#e89bc5", "#7a5fba", "#ffba70"] }, // Stardust Pink, Soft Lavender, Glowing Gold
+                links: {
+                    color: "#7a5fba",
+                    distance: 150,
+                    enable: true,
+                    opacity: 0.3,
+                    width: 1,
+                },
+                move: {
+                    direction: "none",
+                    enable: true,
+                    outModes: { default: "bounce" },
+                    random: false,
+                    speed: 2,
+                    straight: false,
+                },
+                number: {
+                    density: { enable: true, area: 800 },
+                    value: 80,
+                },
+                opacity: { value: 0.5 },
+                shape: { type: "circle" },
+                size: { value: { min: 1, max: 5 } },
+            },
+            detectRetina: true,
+        });
+
+        // GSAP Premium Entrance Animation
+        document.addEventListener('DOMContentLoaded', () => {
+            gsap.set(".auth-box", { y: 150, opacity: 0, scale: 0.95 });
+            // FIXED BUG: Only target the interior elements of the form containers, not the overlay buttons globally
+            gsap.set(".form-container h1, .form-container span, .form-container input, .form-container button", { y: 30, opacity: 0 });
+
+            const tl = gsap.timeline({ defaults: { ease: "power3.out" } });
+
+            // Animate parent container up
+            tl.to(".auth-box", {
+                duration: 1.2,
+                y: 0,
+                opacity: 1,
+                scale: 1,
+                clearProps: "all"
+            })
+                // Stagger animate all inner form elements seamlessly without hiding the right side
+                .to(".form-container h1, .form-container span, .form-container input, .form-container button", {
+                    duration: 0.8,
+                    y: 0,
+                    opacity: 1,
+                    stagger: 0.05,
+                    clearProps: "all"
+                }, "-=0.8");
+        });
+
+        const signInButton = document.getElementById("signIn");
+        const signUpButton = document.getElementById("signUp");
+        const authBox = document.getElementById("auth-box");
+
+        signUpButton.addEventListener("click", () => {
+            authBox.classList.add("right-panel-active")
+        });
+        signInButton.addEventListener("click", () => {
+            authBox.classList.remove("right-panel-active");
+        });
+
+        // Signup Logic
+        document.getElementById('signup-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const errorBox = document.getElementById('signup-error');
+            const password = document.getElementById('signup-password').value;
+
+            const userData = {
+                firstName: document.getElementById('first-name').value,
+                lastName: document.getElementById('last-name').value,
+                email: document.getElementById('signup-email').value,
+                password: password
+            };
+
+            try {
+                const response = await fetch('http://localhost:3000/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(userData)
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    sessionStorage.setItem('dohad_auth_token', 'true');
+                    window.location.href = 'index.html';
+                } else {
+                    errorBox.style.display = 'block';
+                    errorBox.innerText = data.error;
+                }
+            } catch (err) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = 'Cannot connect to Server/MySQL.';
+                console.error(err);
+            }
+        });
+
+        // Login Logic
+        document.getElementById('login-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value;
+            const password = document.getElementById('login-password').value;
+            const errorBox = document.getElementById('login-error');
+
+            try {
+                const response = await fetch('http://localhost:3000/api/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    sessionStorage.setItem('dohad_auth_token', 'true');
+                    window.location.href = 'index.html';
+                } else {
+                    errorBox.style.display = 'block';
+                    errorBox.innerText = data.error;
+                }
+            } catch (err) {
+                errorBox.style.display = 'block';
+                errorBox.innerText = 'Cannot connect to Server/MySQL.';
+                console.error(err);
+            }
+        });
+    </script>
+</body>
+
+</html>

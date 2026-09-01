@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - DOHaD Exposure Intelligence Platform</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css">
+
+    <!-- Premium Animation Libraries -->
+    <script src="https://unpkg.com/@studio-freight/lenis@1.0.42/dist/lenis.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
+</head>
+
+<body>
+    <!-- Custom Cursor -->
+    <div class="custom-cursor"></div>
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">DOHaD Platform</div>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="database.html">Database</a></li>
+                <li><a href="analytics.html">Analysis</a></li>
+                <li><a href="news.html" class="active">News</a></li>
+                <li><a href="team.html">Team</a></li>
+                <li><a href="about.html">About</a></li>
+            </ul>
+            <!-- Mobile Menu Toggle (Hamburger) -->
+            <button class="menu-toggle" id="mobile-menu" aria-label="Toggle navigation menu">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </div>
+    </nav>
+
+    <main class="container">
+        <!-- About Section -->
+        <section id="news-section" class="page-section" style="margin-top: 4rem;">
+            <div class="section-header animate-on-scroll"
+                style="display: flex; justify-content: space-between; align-items: flex-end; flex-wrap: wrap; gap: 1rem;">
+                <div style="text-align: left;">
+                    <h2 style="margin-bottom: 0.5rem;">Latest Research & News</h2>
+                    <p style="margin: 0; color: var(--text-muted);">Live feed of top US health and medical headlines.
+                    </p>
+                </div>
+                <button id="refresh-news-btn" class="btn btn-primary"
+                    style="display: flex; align-items: center; gap: 0.5rem; white-space: nowrap; cursor: pointer;">
+                    <i class="fa-solid fa-rotate-right"></i> Refresh News
+                </button>
+            </div>
+            <div id="news-grid" class="cards-grid">
+                <div class="error-message" role="alert">
+                    <p>Loading live research updates...</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer class="footer">
+        <div class="container"
+            style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; padding: 0;">
+            <div>
+                <p>&copy; 2026 DOHaD Exposure Intelligence Platform. For research purposes.</p>
+            </div>
+            <div style="text-align: right;">
+                <p><strong>Contact Us:</strong> <a href="mailto:info@dohadplatform.org">info@dohadplatform.org</a></p>
+                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 0.25rem;">123 Research Institute
+                    Blvd, Science City</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="js/script.js"></script>
+</body>
+
+</html>
