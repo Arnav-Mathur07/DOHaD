@@ -1,3 +1,4 @@
+require('dotenv').config({ path: __dirname + '/.env' });
 const mysql = require('mysql2/promise');
 const fs = require('fs');
 const readline = require('readline');
@@ -7,14 +8,15 @@ async function importCsv() {
     console.log('Connecting to MySQL to initialize the DOHaD database...');
     // Connect without specifying a database to create it first
     const connection = await mysql.createConnection({
-        host: 'localhost',
-        user: 'root',
-        password: 'D3vilishere',
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 3306,
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || 'D3vilishere',
     });
 
     try {
-        await connection.query('CREATE DATABASE IF NOT EXISTS DOHaD;');
-        await connection.query('USE DOHaD;');
+        await connection.query('CREATE DATABASE IF NOT EXISTS defaultdb;');
+        await connection.query('USE defaultdb;');
         
         await connection.query('DROP TABLE IF EXISTS papers;');
         await connection.query(`
