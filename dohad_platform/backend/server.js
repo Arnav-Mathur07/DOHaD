@@ -8,26 +8,29 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
+// ─── Database Configuration Helper ───────────────────────────────────────────
+const getDbConfig = (dbName) => {
+    const isLocalhost = !process.env.DB_HOST || process.env.DB_HOST === 'localhost';
+    return {
+        host: process.env.DB_HOST || 'localhost',
+        port: process.env.DB_PORT || 3306,
+        user: process.env.DB_USER || 'root',
+        password: process.env.DB_PASSWORD || 'D3vilishere',
+        database: dbName,
+        ssl: isLocalhost ? false : { rejectUnauthorized: false }
+    };
+};
+
 // ─── Auth Database (user login/signup) ───────────────────────────────────────
-const authDb = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'D3vilishere',
-    database: process.env.AUTH_DB_NAME || 'dohad_auth'
-});
+const authDb = mysql.createConnection(getDbConfig(process.env.AUTH_DB_NAME || 'dohad_auth'));
 
 authDb.connect(err => {
-    if (err) { console.error('Error connecting to dohad_auth DB:', err); return; }
-    console.log('Connected to dohad_auth (auth database)!');
+    if (err) { console.error('Error connecting to auth DB:', err); return; }
+    console.log('Connected to auth database!');
 });
 
 // ─── Research Database (DOHaD papers) ────────────────────────────────────────
-const researchDb = mysql.createConnection({
-    host: process.env.DB_HOST || 'localhost',
-    user: process.env.DB_USER || 'root',
-    password: process.env.DB_PASSWORD || 'D3vilishere',
-    database: process.env.RESEARCH_DB_NAME || 'DOHaD'
-});
+const researchDb = mysql.createConnection(getDbConfig(process.env.RESEARCH_DB_NAME || 'DOHaD'));
 
 researchDb.connect(err => {
     if (err) { console.error('Error connecting to DOHaD research DB:', err); return; }
