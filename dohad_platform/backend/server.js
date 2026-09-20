@@ -9,10 +9,10 @@ app.use(cors());
 
 // ─── Auth Database (user login/signup) ───────────────────────────────────────
 const authDb = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'D3vilishere',
-    database: 'dohad_auth'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'D3vilishere',
+    database: process.env.AUTH_DB_NAME || 'dohad_auth'
 });
 
 authDb.connect(err => {
@@ -22,10 +22,10 @@ authDb.connect(err => {
 
 // ─── Research Database (DOHaD papers) ────────────────────────────────────────
 const researchDb = mysql.createConnection({
-    host: 'localhost',
-    user: 'root',
-    password: 'D3vilishere',
-    database: 'DOHaD'
+    host: process.env.DB_HOST || 'localhost',
+    user: process.env.DB_USER || 'root',
+    password: process.env.DB_PASSWORD || 'D3vilishere',
+    database: process.env.RESEARCH_DB_NAME || 'DOHaD'
 });
 
 researchDb.connect(err => {
@@ -131,7 +131,10 @@ app.get('/api/papers/countries', (req, res) => {
     });
 });
 
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`DOHaD Backend Server running on http://localhost:${PORT}`);
+    console.log(`DOHaD Backend Server running on port ${PORT}`);
 });
+
+// Export app for Vercel Serverless Functions
+module.exports = app;

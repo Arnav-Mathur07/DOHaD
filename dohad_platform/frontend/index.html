@@ -292,7 +292,7 @@
                         <select id="species-filter">
                             <option value="">All Models</option>
                             <option value="Human">Human</option>
-                            <option value="Animal">Animal</option>
+                            <option value="Rat">Rats</option>
                         </select>
                     </div>
 
@@ -443,39 +443,8 @@
                 <div class="chart-container card animate-on-scroll delay-400 dose-multiples-section">
                     <h3>Dose Distribution</h3>
                     <div class="faceted-grid"
-                        style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0; outline: 1px solid var(--border-color); margin-top: 1rem; border-radius: 4px; overflow: hidden;">
-                        <!-- Top Left -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #f87171; font-weight: 600;">
-                                Mercury</h4>
-                            <canvas id="chart-dose-mercury" aria-label="Mercury dose chart" role="img"></canvas>
-                        </div>
-                        <!-- Top Right -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; border-bottom: 1px solid var(--border-color); padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #fbbf24; font-weight: 600;">
-                                Cadmium</h4>
-                            <canvas id="chart-dose-cadmium" aria-label="Cadmium dose chart" role="img"></canvas>
-                        </div>
-                        <!-- Bottom Left -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; border-right: 1px solid var(--border-color); padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #4ade80; font-weight: 600;">
-                                Lead</h4>
-                            <canvas id="chart-dose-lead" aria-label="Lead dose chart" role="img"></canvas>
-                        </div>
-                        <!-- Bottom Right -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #60a5fa; font-weight: 600;">
-                                Arsenic</h4>
-                            <canvas id="chart-dose-arsenic" aria-label="Arsenic dose chart" role="img"></canvas>
-                        </div>
+                        style="margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; padding: 2rem 1rem 1rem 1rem; height: 500px; position: relative;">
+                        <canvas id="chart-dose-combined" aria-label="Combined dose chart" role="img"></canvas>
                     </div>
                 </div>
             </div>
@@ -546,71 +515,71 @@
                 <div class="stats-panel demographics-panel animate-on-scroll fade-in-left delay-200">
                     <div class="panel-header">
                         <i class="fa-solid fa-chart-pie" style="color: #e89bc5; font-size: 1.2rem;"></i>
-                        <span>Study Characteristics (N=570)</span>
+                        <span id="demo-total-n">Study Characteristics (N=570)</span>
                     </div>
                     <div class="panel-body">
                         <!-- Items -->
                         <div class="demo-item">
                             <div class="demo-label-row">
                                 <span>Human Subject Focus</span>
-                                <span>66%</span>
+                                <span id="demo-human-pct">66%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 66%;"></div>
+                                <div id="demo-human-bar" class="demo-progress-fill" style="width: 66%;"></div>
                             </div>
                         </div>
                         <div class="demo-item">
                             <div class="demo-label-row">
                                 <span>Animal Model Focus</span>
-                                <span>34%</span>
+                                <span id="demo-animal-pct">34%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 34%;"></div>
+                                <div id="demo-animal-bar" class="demo-progress-fill" style="width: 34%;"></div>
                             </div>
                         </div>
                         <div class="demo-item" style="margin-top: 1.5rem;">
                             <div class="demo-label-row">
                                 <span style="color: var(--primary-color);">Arsenic Exposures</span>
-                                <span>100%</span>
+                                <span id="demo-arsenic-pct">100%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 100%;"></div>
+                                <div id="demo-arsenic-bar" class="demo-progress-fill" style="width: 100%;"></div>
                             </div>
                         </div>
                         <div class="demo-item">
                             <div class="demo-label-row">
                                 <span style="color: var(--primary-color);">Lead Exposures</span>
-                                <span>0%</span>
+                                <span id="demo-lead-pct">0%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 0%;"></div>
+                                <div id="demo-lead-bar" class="demo-progress-fill" style="width: 0%;"></div>
                             </div>
                         </div>
                         <div class="demo-item">
                             <div class="demo-label-row">
                                 <span style="color: var(--primary-color);">Mercury Exposures</span>
-                                <span>0%</span>
+                                <span id="demo-mercury-pct">0%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 0%;"></div>
+                                <div id="demo-mercury-bar" class="demo-progress-fill" style="width: 0%;"></div>
                             </div>
                         </div>
                         <div class="demo-item">
                             <div class="demo-label-row">
                                 <span style="color: var(--primary-color);">Cadmium Exposures</span>
-                                <span>0%</span>
+                                <span id="demo-cadmium-pct">0%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 0%;"></div>
+                                <div id="demo-cadmium-bar" class="demo-progress-fill" style="width: 0%;"></div>
                             </div>
                         </div>
                         <div class="demo-item">
                             <div class="demo-label-row">
                                 <span style="color: var(--primary-color);">Country</span>
-                                <span>95%</span>
+                                <span id="demo-country-pct">95%</span>
                             </div>
                             <div class="demo-progress-bar">
-                                <div class="demo-progress-fill" style="width: 95%;"></div>
+                                <div id="demo-country-bar" class="demo-progress-fill" style="width: 95%;"></div>
                             </div>
                         </div>
                     </div>
@@ -632,26 +601,7 @@
                                 style="opacity: 0.85; width: 100%; height: auto; display: block;">
 
                             <!-- Geographic Markers -->
-                            <!-- USA Marker -->
-                            <div class="map-marker" style="top: 35%; left: 20%;" title="USA: 43%">
-                                <div class="marker-dot"></div>
-                                <div class="marker-pulse"></div>
-                            </div>
-                            <!-- China Marker -->
-                            <div class="map-marker" style="top: 38%; left: 76%;" title="China: 15%">
-                                <div class="marker-dot"></div>
-                                <div class="marker-pulse"></div>
-                            </div>
-                            <!-- India Marker -->
-                            <div class="map-marker" style="top: 50%; left: 70%;" title="India: 3%">
-                                <div class="marker-dot"></div>
-                                <div class="marker-pulse"></div>
-                            </div>
-                            <!-- Spain Marker -->
-                            <div class="map-marker" style="top: 32%; left: 47%;" title="Spain: 3%">
-                                <div class="marker-dot"></div>
-                                <div class="marker-pulse"></div>
-                            </div>
+                            <div class="dynamic-map-markers"></div>
                         </div>
                     </div>
                 </div>

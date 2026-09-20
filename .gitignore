@@ -4,3 +4,7 @@
 # Node.js
 node_modules/
 .env
+.vercel/
+
+# Scripts & Generation
+image_generation/

@@ -154,39 +154,8 @@
                 <div class="chart-container card animate-on-scroll delay-400 dose-multiples-section">
                     <h3>Dose Distribution</h3>
                     <div class="faceted-grid"
-                        style="display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1fr 1fr; gap: 0; outline: 1px solid var(--border-color); margin-top: 1rem; border-radius: 4px; overflow: hidden;">
-                        <!-- Top Left -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; border-right: 1px solid var(--border-color); border-bottom: 1px solid var(--border-color); padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #f87171; font-weight: 600;">
-                                Mercury</h4>
-                            <canvas id="chart-dose-mercury" aria-label="Mercury dose chart" role="img"></canvas>
-                        </div>
-                        <!-- Top Right -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; border-bottom: 1px solid var(--border-color); padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #fbbf24; font-weight: 600;">
-                                Cadmium</h4>
-                            <canvas id="chart-dose-cadmium" aria-label="Cadmium dose chart" role="img"></canvas>
-                        </div>
-                        <!-- Bottom Left -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; border-right: 1px solid var(--border-color); padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #4ade80; font-weight: 600;">
-                                Lead</h4>
-                            <canvas id="chart-dose-lead" aria-label="Lead dose chart" role="img"></canvas>
-                        </div>
-                        <!-- Bottom Right -->
-                        <div class="faceted-cell"
-                            style="position: relative; height: 250px; padding: 2rem 1rem 1rem 1rem;">
-                            <h4
-                                style="position: absolute; top: 10px; left: 15px; margin: 0; font-size: 0.85rem; color: #60a5fa; font-weight: 600;">
-                                Arsenic</h4>
-                            <canvas id="chart-dose-arsenic" aria-label="Arsenic dose chart" role="img"></canvas>
-                        </div>
+                        style="margin-top: 1rem; border: 1px solid var(--border-color); border-radius: 4px; overflow: hidden; padding: 2rem 1rem 1rem 1rem; height: 500px; position: relative;">
+                        <canvas id="chart-dose-combined" aria-label="Combined dose chart" role="img"></canvas>
                     </div>
                 </div>
             </div>

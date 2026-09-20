@@ -44,10 +44,7 @@ const DOM = {
     // Charts canvases (Analytics)
     chartYear: document.getElementById('chart-studies-year'),
     chartMetal: document.getElementById('chart-studies-metal'),
-    chartDoseMercury: document.getElementById('chart-dose-mercury'),
-    chartDoseCadmium: document.getElementById('chart-dose-cadmium'),
-    chartDoseLead: document.getElementById('chart-dose-lead'),
-    chartDoseArsenic: document.getElementById('chart-dose-arsenic')
+    chartDoseCombined: document.getElementById('chart-dose-combined')
 };
 
 /**
@@ -57,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation();
 
     // Site-wide Authentication Check
-    const isAuthPage = window.location.pathname.endsWith('auth.html');
+    const isAuthPage = window.location.pathname.includes('auth');
     const isAuthenticated = sessionStorage.getItem('dohad_auth_token') === 'true';
 
     // If they aren't authenticated and they aren't on the auth page -> block them
@@ -73,7 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Only fetch if they are authorized or if data is explicitly needed on an auth page
     loadData().then(() => {
         // Initialize components based on the current page's DOM elements
-        if (DOM.statTotal) updateHomeStats();
+        updateHomeStats();
 
         // Ensure charts are initialized BEFORE filters are applied,
         // because applyFilters() implicitly updates the charts!
@@ -313,7 +310,7 @@ async function loadData() {
         appState.data = data.map(row => ({
             ...row,
             metal: row.toxicant || '',
-            species: 'Human', // Default for these databases
+            species: row.species || 'Human', // Extract real species or fallback to Human
             outcome: row.key_finding || '',
             _numericYear: parseInt(row.year) || null,
             doi: row.pmid ? `https://pubmed.ncbi.nlm.nih.gov/${row.pmid}/` : '#'
@@ -438,20 +435,68 @@ function resetFilters() {
  * Update stats on the Homepage
  */
 function updateHomeStats() {
-    if (!DOM.statTotal) return;
+    if (DOM.statTotal) {
+        const total = appState.data.length;
+        const uniqueCountries = new Set(appState.data.map(item => item.country).filter(Boolean)).size;
 
-    const total = appState.data.length;
-    const uniqueCountries = new Set(appState.data.map(item => item.country).filter(Boolean)).size;
+        const years = appState.data.map(item => item._numericYear).filter(y => y !== null);
+        let yearRange = '--';
+        if (years.length > 0) {
+            yearRange = `${Math.min(...years)} - ${Math.max(...years)}`;
+        }
 
-    const years = appState.data.map(item => item._numericYear).filter(y => y !== null);
-    let yearRange = '--';
-    if (years.length > 0) {
-        yearRange = `${Math.min(...years)} - ${Math.max(...years)}`;
+        DOM.statTotal.textContent = total;
+        DOM.statCountries.textContent = uniqueCountries;
+        DOM.statYears.textContent = yearRange;
     }
 
-    DOM.statTotal.textContent = total;
-    DOM.statCountries.textContent = uniqueCountries;
-    DOM.statYears.textContent = yearRange;
+    // --- Dynamic Dataset Composition ---
+    const totalN = appState.data.length;
+    
+    let humanCount = 0;
+    let animalCount = 0;
+    let arsenicCount = 0;
+    let leadCount = 0;
+    let mercuryCount = 0;
+    let cadmiumCount = 0;
+    let countryCount = 0;
+
+    appState.data.forEach(item => {
+        const species = (item.species || '').toLowerCase();
+        if (species.includes('human')) humanCount++;
+        else if (species && species !== 'unknown') animalCount++;
+
+        const metal = (item.metal || '').toLowerCase();
+        if (metal.includes('arsenic')) arsenicCount++;
+        if (metal.includes('lead')) leadCount++;
+        if (metal.includes('mercury')) mercuryCount++;
+        if (metal.includes('cadmium')) cadmiumCount++;
+
+        if (item.country && item.country.toLowerCase() !== 'unknown') countryCount++;
+    });
+
+    const getPct = (val) => totalN === 0 ? 0 : Math.round((val / totalN) * 100);
+
+    const updateBar = (idPrefix, count) => {
+        const pctEl = document.getElementById(`${idPrefix}-pct`);
+        const barEl = document.getElementById(`${idPrefix}-bar`);
+        const pct = getPct(count);
+        if (pctEl) pctEl.textContent = `${pct}%`;
+        if (barEl) barEl.style.width = `${pct}%`;
+    };
+
+    const demoTotalN = document.getElementById('demo-total-n');
+    if (demoTotalN) demoTotalN.textContent = `Study Characteristics (N=${totalN})`;
+    const demoTotalNAbout = document.querySelector('.demographics-panel .panel-header span');
+    if (demoTotalNAbout) demoTotalNAbout.textContent = `Study Characteristics (N=${totalN})`;
+
+    updateBar('demo-human', humanCount);
+    updateBar('demo-animal', animalCount);
+    updateBar('demo-arsenic', arsenicCount);
+    updateBar('demo-lead', leadCount);
+    updateBar('demo-mercury', mercuryCount);
+    updateBar('demo-cadmium', cadmiumCount);
+    updateBar('demo-country', countryCount);
 
     // --- Dynamic Flip Card Injections ---
 
@@ -474,22 +519,70 @@ function updateHomeStats() {
             : '<li>No toxicant data</li>';
     }
 
-    // 2. Calculate and Inject Top 4 Countries
+    // 2. Calculate Country Stats
+    const countryMap = {};
+    appState.data.forEach(item => {
+        const c = item.country || '';
+        if (c && c.toLowerCase() !== 'unknown') countryMap[c] = (countryMap[c] || 0) + 1;
+    });
+
+    const sortedCountries = Object.entries(countryMap)
+        .sort((a, b) => b[1] - a[1]);
+
     const flipCountriesList = document.getElementById('flip-countries-list');
     if (flipCountriesList) {
-        const countryMap = {};
-        appState.data.forEach(item => {
-            const c = item.country || '';
-            if (c) countryMap[c] = (countryMap[c] || 0) + 1;
+        const top4Countries = sortedCountries.slice(0, 4);
+        flipCountriesList.innerHTML = top4Countries.length
+            ? top4Countries.map(([country, count]) => `<li><span style="font-weight: 500;">${country}</span> <span>${count}</span></li>`).join('')
+            : '<li>No country data</li>';
+    }
+
+    // --- Dynamic Map Markers ---
+    const mapCoordinates = {
+        'usa': { top: 35, left: 20 },
+        'united states': { top: 35, left: 20 },
+        'china': { top: 38, left: 76 },
+        'india': { top: 50, left: 70 },
+        'spain': { top: 32, left: 47 },
+        'japan': { top: 35, left: 85 },
+        'canada': { top: 20, left: 18 },
+        'uk': { top: 25, left: 45 },
+        'united kingdom': { top: 25, left: 45 },
+        'brazil': { top: 65, left: 32 },
+        'australia': { top: 75, left: 85 },
+        'france': { top: 30, left: 47 },
+        'germany': { top: 28, left: 49 },
+        'italy': { top: 32, left: 51 },
+        'mexico': { top: 45, left: 15 },
+        'south korea': { top: 36, left: 82 },
+        'taiwan': { top: 42, left: 82 },
+        'bangladesh': { top: 48, left: 74 },
+        'iran': { top: 40, left: 63 }
+    };
+
+    const mapMarkerContainers = document.querySelectorAll('.dynamic-map-markers');
+    if (mapMarkerContainers.length > 0) {
+        let markersHTML = '';
+        // Plot top 10 countries on map to avoid clutter
+        const countriesToPlot = sortedCountries.slice(0, 10);
+        
+        countriesToPlot.forEach(([country, count]) => {
+            const normalizedName = country.toLowerCase().trim();
+            const coords = mapCoordinates[normalizedName];
+            if (coords) {
+                const pct = getPct(count);
+                markersHTML += `
+                    <div class="map-marker" style="top: ${coords.top}%; left: ${coords.left}%;" title="${country}: ${pct}%">
+                        <div class="marker-dot"></div>
+                        <div class="marker-pulse"></div>
+                    </div>
+                `;
+            }
         });
 
-        const sortedCountries = Object.entries(countryMap)
-            .sort((a, b) => b[1] - a[1])
-            .slice(0, 4); // Only show top 4 to fit in the small card height
-
-        flipCountriesList.innerHTML = sortedCountries.length
-            ? sortedCountries.map(([country, count]) => `<li><span style="font-weight: 500;">${country}</span> <span>${count}</span></li>`).join('')
-            : '<li>No country data</li>';
+        mapMarkerContainers.forEach(container => {
+            container.innerHTML = markersHTML;
+        });
     }
 }
 
@@ -512,7 +605,7 @@ function applyFilters() {
         const matchesSearch = f.searchTerm === '' || titleMatch || outcomeMatch || abstractMatch;
 
         const matchesMetal = !f.selectedMetal || item.metal === f.selectedMetal;
-        const matchesSpecies = !f.selectedSpecies || item.species === f.selectedSpecies;
+        const matchesSpecies = !f.selectedSpecies || (item.species || '').toLowerCase().includes(f.selectedSpecies.toLowerCase());
         const matchesCountry = !f.selectedCountry || item.country === f.selectedCountry;
 
         // Article Type logic (Research vs Review)
@@ -689,7 +782,7 @@ function renderCards() {
  * Initialize Chart.js structured instances (runs once)
  */
 function initCharts() {
-    Chart.defaults.font.family = "'Inter', sans-serif";
+    Chart.defaults.font.family = "'Times New Roman', Times, serif";
     Chart.defaults.color = '#718096';
     const commonOpts = { responsive: true, maintainAspectRatio: false, animation: { duration: 500 } };
     appState.charts.year = new Chart(DOM.chartYear, { type: 'line', data: { labels: [], datasets: [] }, options: { ...commonOpts, plugins: { legend: { display: true, position: 'top' } }, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } } });
@@ -815,13 +908,23 @@ function initCharts() {
     });
     const baseOpts = { ...commonOpts, plugins: { legend: { display: false } }, maintainAspectRatio: false };
 
-    // Explicitly show X and Y axes on every bar chart quadrant per user request
-    const optsAll = { ...baseOpts, scales: { x: { grid: { drawBorder: false } }, y: { beginAtZero: true, suggestedMax: 10 } } };
+    // Grouped bar chart for doses (Analytics Page)
+    const optsCombined = { ...baseOpts, plugins: { legend: { display: true, position: 'top' } }, scales: { x: { grid: { drawBorder: false } }, y: { beginAtZero: true, suggestedMax: 10 } } };
+    if (DOM.chartDoseCombined) appState.charts.doseCombined = new Chart(DOM.chartDoseCombined, { type: 'bar', data: { labels: [], datasets: [] }, options: optsCombined });
 
-    if (DOM.chartDoseMercury) appState.charts.doseMercury = new Chart(DOM.chartDoseMercury, { type: 'bar', data: { labels: [], datasets: [] }, options: optsAll });
-    if (DOM.chartDoseCadmium) appState.charts.doseCadmium = new Chart(DOM.chartDoseCadmium, { type: 'bar', data: { labels: [], datasets: [] }, options: optsAll });
-    if (DOM.chartDoseLead) appState.charts.doseLead = new Chart(DOM.chartDoseLead, { type: 'bar', data: { labels: [], datasets: [] }, options: optsAll });
-    if (DOM.chartDoseArsenic) appState.charts.doseArsenic = new Chart(DOM.chartDoseArsenic, { type: 'bar', data: { labels: [], datasets: [] }, options: optsAll });
+    // Individual dose charts (Home Page)
+    appState.charts.doses = {};
+    const doseMetals = ['mercury', 'cadmium', 'lead', 'arsenic'];
+    doseMetals.forEach(m => {
+        const el = document.getElementById(`chart-dose-${m}`);
+        if (el) {
+            appState.charts.doses[m] = new Chart(el, { 
+                type: 'bar', 
+                data: { labels: [], datasets: [] }, 
+                options: { ...baseOpts, scales: { x: { display: true, grid: { display: false } }, y: { beginAtZero: true, suggestedMax: 5 } } } 
+            });
+        }
+    });
 }
 
 // Actual Geographic Lat/Long Coordinates for Leaflet
@@ -966,17 +1069,13 @@ function updateChartsData() {
         appState.charts.year.data.labels = []; appState.charts.year.data.datasets = [];
         appState.charts.metal.data.labels = []; appState.charts.metal.data.datasets = [];
 
-        ['doseMercury', 'doseCadmium', 'doseLead', 'doseArsenic'].forEach(chartId => {
-            if (appState.charts[chartId]) {
-                appState.charts[chartId].data.labels = [];
-                appState.charts[chartId].data.datasets = [];
-            }
-        });
+        if (appState.charts.doseCombined) {
+            appState.charts.doseCombined.data.labels = [];
+            appState.charts.doseCombined.data.datasets = [];
+        }
 
         appState.charts.year.update(); appState.charts.metal.update();
-        ['doseMercury', 'doseCadmium', 'doseLead', 'doseArsenic'].forEach(chartId => {
-            if (appState.charts[chartId]) appState.charts[chartId].update();
-        });
+        if (appState.charts.doseCombined) appState.charts.doseCombined.update();
 
         updateHeatmaps();
         return;
@@ -1031,11 +1130,15 @@ function updateChartsData() {
     appState.charts.year.update();
     appState.charts.metal.update();
 
-    if (appState.charts.doseMercury) {
+    const hasIndividualDoseCharts = Object.keys(appState.charts.doses || {}).length > 0;
+
+    if (appState.charts.doseCombined || hasIndividualDoseCharts) {
         // Check if a 'dose' column exists in the CSV data
         const hasDoseColumn = appState.data.length > 0 && 'dose' in appState.data[0];
 
-        DOM.chartDoseMercury.parentElement.parentElement.parentElement.style.display = 'block';
+        if (appState.charts.doseCombined && DOM.chartDoseCombined) {
+            DOM.chartDoseCombined.parentElement.parentElement.style.display = 'block';
+        }
 
         const doseCounts = {
             'Mercury': { 'Low (<1)': 0, 'Medium (1-10)': 0, 'High (>10)': 0 },
@@ -1059,7 +1162,6 @@ function updateChartsData() {
 
         const targetMetals = ['Mercury', 'Cadmium', 'Lead', 'Arsenic'];
         const colors = ['#f87171', '#fbbf24', '#4ade80', '#60a5fa']; // Red, Yellow, Green, Blue
-        const chartKeys = ['doseMercury', 'doseCadmium', 'doseLead', 'doseArsenic'];
         const doseLabels = ['Low (<1)', 'Medium (1-10)', 'High (>10)'];
 
         // Find global max to sync Y axes height
@@ -1071,24 +1173,44 @@ function updateChartsData() {
         });
         const yMax = Math.max(10, Math.ceil(maxCount * 1.2)); // Give some headroom
 
-        targetMetals.forEach((metal, index) => {
-            const chartKey = chartKeys[index];
-            if (appState.charts[chartKey]) {
-                appState.charts[chartKey].data = {
-                    labels: doseLabels,
-                    datasets: [{
-                        label: metal,
-                        data: [doseCounts[metal]['Low (<1)'], doseCounts[metal]['Medium (1-10)'], doseCounts[metal]['High (>10)']],
-                        backgroundColor: colors[index],
-                        borderRadius: 4
-                    }]
+        if (appState.charts.doseCombined) {
+            const doseDatasets = targetMetals.map((metal, index) => {
+                return {
+                    label: metal,
+                    data: [doseCounts[metal]['Low (<1)'], doseCounts[metal]['Medium (1-10)'], doseCounts[metal]['High (>10)']],
+                    backgroundColor: colors[index],
+                    borderRadius: 4
                 };
+            });
 
-                // Update Max Y to keep them visually comparable
-                appState.charts[chartKey].options.scales.y.max = yMax;
-                appState.charts[chartKey].update();
-            }
-        });
+            appState.charts.doseCombined.data = {
+                labels: doseLabels,
+                datasets: doseDatasets
+            };
+
+            // Update Max Y to keep them visually comparable
+            appState.charts.doseCombined.options.scales.y.max = yMax;
+            appState.charts.doseCombined.update();
+        }
+
+        if (hasIndividualDoseCharts) {
+            targetMetals.forEach((metal, index) => {
+                const mKey = metal.toLowerCase();
+                const chartInst = appState.charts.doses[mKey];
+                if (chartInst) {
+                    chartInst.data = {
+                        labels: doseLabels,
+                        datasets: [{
+                            data: [doseCounts[metal]['Low (<1)'], doseCounts[metal]['Medium (1-10)'], doseCounts[metal]['High (>10)']],
+                            backgroundColor: colors[index],
+                            borderRadius: 4
+                        }]
+                    };
+                    chartInst.options.scales.y.max = yMax;
+                    chartInst.update();
+                }
+            });
+        }
     }
 
     updateHeatmaps();
